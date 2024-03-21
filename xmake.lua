@@ -45,6 +45,8 @@ set_languages("gnulatest")
 add_requires("objfw", { configs = { shared = is_kind("shared") } })
 add_requires(packages, { configs = { shared = is_kind("shared") } })
 
+add_rules("mode.debug", "mode.release", "mode.check", "mode.minsizerel")
+
 target("3DTicTacToe")
 do
     set_kind("binary")
