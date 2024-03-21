@@ -23,6 +23,9 @@ $nonnil_begin
 
 - (void)draw;
 
+@optional
+- (void)hide;
+
 @end
 
 @protocol Interactable
@@ -50,6 +53,8 @@ $nonnil_begin
 
 @end
 
-@interface Game : OFObject<GameDelegate> @end
+@interface Game : OFObject<GameDelegate>
+@property double previousTime, currentTime, deltaTime;
+@end
 
 $nonnil_end

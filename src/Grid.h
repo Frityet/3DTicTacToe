@@ -31,6 +31,6 @@
 @property Vector3 position;
 @property __strong GridBox *(*boxes)[3][3][3];
 
-- (instancetype)initAt: (Vector3)position boxColours: (Color[3][3][3])colour;
+- (instancetype)initAt: (Vector3)position boxColours: (Color(*)[3][3][3])colour;
 
 @end

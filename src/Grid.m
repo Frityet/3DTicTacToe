@@ -17,7 +17,9 @@
 
 #include "Grid.h"
 
-@implementation GridBox
+@implementation GridBox {
+    int enumIndex;
+}
 
 - (instancetype)initAt: (Vector3)position colour: (Color)colour
 {
@@ -31,8 +33,10 @@
 
 - (void)draw
 {
-    DrawCubeV(_position, (Vector3){1, 1, 1}, _colour);
-    DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
+    if (_colour.a != 0) {
+        DrawCubeV(_position, (Vector3){1, 1, 1}, _colour);
+        DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
+    }
 }
 
 - (bool)detectInteraction:(Camera3D)camera
@@ -54,17 +58,24 @@
     return collision.hit;
 }
 
+- (void)hide
+{
+    _colour = BLANK;
+}
+
 @end
 
 @implementation Grid
 
-- (instancetype)initAt: (Vector3)position boxColours: (Color[3][3][3])colour
+- (instancetype)initAt: (Vector3)position boxColours: (Color(*)[3][3][3])colour
 {
     self = [super init];
 
     _position = position;
 
-    _boxes = (__strong GridBox *(*)[3][3][3])malloc(sizeof(*_boxes));
+    _boxes = (__strong GridBox *(*)[3][3][3])calloc(1, sizeof(*_boxes));
+    if (_boxes == NULL)
+        @throw [OFOutOfMemoryException exceptionWithRequestedSize: sizeof(*_boxes)];
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -73,7 +84,7 @@
                     position.x + i,
                     position.y + j,
                     position.z + k
-                } colour: colour[i][j][k]];
+                } colour: (*colour)[i][j][k]];
             }
         }
     }
@@ -98,15 +109,18 @@
     return hadInteraction;
 }
 
-- (int)countByEnumeratingWithState:(nonnull OFFastEnumerationState *)state objects:(__unsafe_unretained id  _Nonnull * _Nonnull)objects count:(int)count
+- (int)countByEnumeratingWithState:(OFFastEnumerationState *nonnil)state objects:(__unsafe_unretained nonnil id *nonnil)objects count:(int)len
 {
-    static int i = 0;
-    if (i >= 27)
-        return 0;
+    auto arr = [OFMutableArray<GridBox *> arrayWithCapacity: 27];
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                [arr addObject: (*_boxes)[i][j][k]];
+            }
+        }
+    }
 
-    *objects = (*_boxes)[i / 9][(i / 3) % 3][i % 3];
-    i++;
-    return 1;
+    return [arr countByEnumeratingWithState: state objects: objects count: len];
 }
 
 @end
