@@ -8,7 +8,6 @@ $nonnil_begin
 @implementation Game {
     Camera3D camera;
     Grid *grid;
-    CameraMode cameraMode;
 }
 
 + (OFString *)title
@@ -25,49 +24,52 @@ $nonnil_begin
     [OFStdOut writeLine: @"Starting game..."];
 
     camera = (Camera3D) {
-        .position = { 10, 10, 10 },
+        .position = { 5, 5, 5 },
         .up = { 0, 1, 0 },
         .fovy = 45,
         .projection = CAMERA_PERSPECTIVE
     };
-    cameraMode = CAMERA_FREE;
 
-    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 }
-                           rows: 3 columns: 3 depth: 3
-                         colour: RED];
+    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } boxColours: (Color[3][3][3]){
+        {
+            { RED, GREEN, BLUE },
+            { YELLOW, ORANGE, PINK },
+            { VIOLET, MAGENTA, SKYBLUE }
+        },
+        {
+            { RED, GREEN, BLUE },
+            { YELLOW, ORANGE, PINK },
+            { VIOLET, MAGENTA, SKYBLUE }
+        },
+        {
+            { RED, GREEN, BLUE },
+            { YELLOW, ORANGE, PINK },
+            { VIOLET, MAGENTA, SKYBLUE }
+        }
+    }];
 
-    DisableCursor();
 }
 
 - (void)draw
 {
     ClearBackground(RAYWHITE);
     DrawText(Game.title.UTF8String, 10, 10, 20, DARKGRAY);
-    DrawFPS(10, 50);
+    DrawFPS(10, 30);
 
-    //switch the camera mode
-    if (IsKeyPressed('N')) {
-        cameraMode += 1;
-        if (cameraMode > CAMERA_THIRD_PERSON) cameraMode = CAMERA_CUSTOM;
-    }
-
-    DrawText([OFString stringWithFormat: @"Camera mode %d: %s", cameraMode, (const char *[]){
-        "Custom",
-        "Free",
-        "Orbital",
-        "First person",
-        "Third person"
-    }[cameraMode]].UTF8String, 10, 70, 20, DARKGRAY);;
-
-    UpdateCamera(&camera, cameraMode);
+    UpdateCamera(&camera, CAMERA_ORBITAL);
 
     BeginMode3D(camera);
     {
-        for (GridBox *box in grid) {
-            [box draw];
-        }
+        [grid draw];
     }
     EndMode3D();
+}
+
+- (void)update
+{
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        
+    }
 }
 
 @end

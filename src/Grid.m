@@ -35,9 +35,8 @@
     DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
 }
 
-- (bool)wasInteractedWith: (Camera3D)camera
+- (bool)detectInteraction:(Camera3D)camera
 {
-    if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) return false;
     auto ray = GetMouseRay(GetMousePosition(), camera);
     auto collision = GetRayCollisionBox(ray, (BoundingBox){
         .min = {
@@ -59,54 +58,55 @@
 
 @implementation Grid
 
-
-- (instancetype)initAt: (Vector3)position rows: (int)r columns: (int)c depth: (int)d colour: (Color)colour
+- (instancetype)initAt: (Vector3)position boxColours: (Color[3][3][3])colour
 {
     self = [super init];
 
     _position = position;
 
-    OFMutableArray<OFArray<OFArray<GridBox *> *> *> *boxes = [OFMutableArray array];
-    for (int i = 0; i < r; i++) {
-        OFMutableArray<OFArray<GridBox *> *> *row = [OFMutableArray array];
-        for (int j = 0; j < c; j++) {
-            OFMutableArray<GridBox *> *column = [OFMutableArray array];
-            for (int k = 0; k < d; k++) {
-                GridBox *box = [[GridBox alloc] initAt: (Vector3){position.x + i, position.y + j, position.z + k} colour: colour];
-                [column addObject: box];
+    _boxes = (__strong GridBox *(*)[3][3][3])malloc(sizeof(*_boxes));
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
+                (*_boxes)[i][j][k] = [[GridBox alloc] initAt: (Vector3) {
+                    position.x + i,
+                    position.y + j,
+                    position.z + k
+                } colour: colour[i][j][k]];
             }
-            [column makeImmutable];
-            [row addObject: column];
         }
-        [row makeImmutable];
-        [boxes addObject: row];
     }
-    [boxes makeImmutable];
-    _boxes = boxes;
 
     return self;
 }
 
-- (OFArray<OFArray<GridBox *> *> *)objectAtIndexedSubscript: (size_t)index
-{
-    return _boxes[index];
-}
-
-//should iterate over every box in the grid
-- (int)countByEnumeratingWithState:(OFFastEnumerationState *)state objects: (__unsafe_unretained id nonnil *)objects count:(int)count
-{
-
-}
-
 - (void)draw
 {
-    for (OFArray<OFArray<GridBox *> *> *row in _boxes)
-    for (OFArray<GridBox *> *column in row)
-    for (GridBox *box in column)
+    for (GridBox *box in self)
         [box draw];
+}
 
+- (bool)detectInteraction:(Camera3D)camera
+{
+    bool hadInteraction = false;
+    for (GridBox *box in self) {
+        if ([box detectInteraction: camera])
+            hadInteraction = true;
+    }
 
+    return hadInteraction;
+}
 
+- (int)countByEnumeratingWithState:(nonnull OFFastEnumerationState *)state objects:(__unsafe_unretained id  _Nonnull * _Nonnull)objects count:(int)count
+{
+    static int i = 0;
+    if (i >= 27)
+        return 0;
+
+    *objects = (*_boxes)[i / 9][(i / 3) % 3][i % 3];
+    i++;
+    return 1;
 }
 
 @end

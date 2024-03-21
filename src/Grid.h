@@ -26,13 +26,11 @@
 
 @end
 
-@interface Grid : OFObject<Renderable, OFFastEnumeration>
+@interface Grid : OFObject<Renderable, Interactable, OFFastEnumeration>
 
 @property Vector3 position;
-@property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
+@property __strong GridBox *(*boxes)[3][3][3];
 
-- (instancetype)initAt: (Vector3)position rows: (int)r columns: (int)c depth: (int)d colour: (Color)colour;
-
-- (OFArray<OFArray<GridBox *> *> *)objectAtIndexedSubscript: (size_t)index;
+- (instancetype)initAt: (Vector3)position boxColours: (Color[3][3][3])colour;
 
 @end

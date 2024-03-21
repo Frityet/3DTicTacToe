@@ -27,7 +27,7 @@ $nonnil_begin
 
 @protocol Interactable
 
-- (bool)wasInteractedWith: (Camera3D)camera;
+- (bool)detectInteraction: (Camera3D)camera;
 
 @end
 
