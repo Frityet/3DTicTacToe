@@ -11,7 +11,8 @@
             "program": "${workspaceFolder}/build/macosx/x86_64/debug/MyProject",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "preLaunchTask": "Build"
+            "preLaunchTask": "Build",
+            "console": "internalConsole"
         }
     ]
 }

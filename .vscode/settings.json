@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.h": "objective-c",
+    },
+    "explorer.fileNesting.patterns": {
+        "*.h": "${capture}.m",
+    }
+}

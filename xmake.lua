@@ -4,7 +4,7 @@
 --and prefix with other package managers, for example `vcpkg::pcre2` in order to use their packages.
 --Documentation: https://xmake.io/#/manual/global_interfaces?id=add_requires
 local packages = {
-
+    "raylib"
 }
 
 --Sanitizers to use when building in debug mode
@@ -18,6 +18,15 @@ local mflags = {
     },
     regular = {
         "-Wall", "-Wextra", "-Werror",
+        "-Wnull-dereference",
+        "-Wnull-conversion",
+        "-Wnullability-completeness",
+        "-Wnullable-to-nonnull-conversion",
+        "-Wanon-enum-enum-conversion",
+        "-Wassign-enum",
+        "-Wenum-conversion",
+        "-Wenum-enum-conversion",
+        "-Wno-missing-braces",
     }
 }
 
@@ -36,7 +45,7 @@ set_languages("gnulatest")
 add_requires("objfw", { configs = { shared = is_kind("shared") } })
 add_requires(packages, { configs = { shared = is_kind("shared") } })
 
-target("MyProject")
+target("3DTicTacToe")
 do
     set_kind("binary")
     add_packages("objfw")
