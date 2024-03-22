@@ -42,7 +42,7 @@
 - (bool)detectInteraction:(Camera3D)camera
 {
     auto ray = GetMouseRay(GetMousePosition(), camera);
-    auto collision = GetRayCollisionBox(ray, (BoundingBox){
+    auto collision = GetRayCollisionBox(ray, (BoundingBox) {
         .min = {
             _position.x - 0.5,
             _position.y - 0.5,
@@ -94,14 +94,14 @@
 
 - (void)draw
 {
-    for (GridBox *box in self)
+    for (GridBox *box in self.asArray)
         [box draw];
 }
 
 - (bool)detectInteraction:(Camera3D)camera
 {
     bool hadInteraction = false;
-    for (GridBox *box in self) {
+    for (GridBox *box in self.asArray) {
         if ([box detectInteraction: camera])
             hadInteraction = true;
     }
@@ -109,9 +109,10 @@
     return hadInteraction;
 }
 
-- (int)countByEnumeratingWithState:(OFFastEnumerationState *nonnil)state objects:(__unsafe_unretained nonnil id *nonnil)objects count:(int)len
+- (OFArray<GridBox *> *)boxesToArray
 {
     auto arr = [OFMutableArray<GridBox *> arrayWithCapacity: 27];
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
@@ -120,7 +121,7 @@
         }
     }
 
-    return [arr countByEnumeratingWithState: state objects: objects count: len];
+    return arr;
 }
 
 @end

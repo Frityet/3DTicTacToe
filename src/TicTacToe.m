@@ -32,21 +32,11 @@ $nonnil_begin
     };
 
     grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } boxColours: &(Color[3][3][3]){
-        {
+        [0 ... 2] = {
             { RED, GREEN, BLUE },
             { YELLOW, ORANGE, PINK },
             { VIOLET, MAGENTA, SKYBLUE }
         },
-        {
-            { RED, GREEN, BLUE },
-            { YELLOW, ORANGE, PINK },
-            { VIOLET, MAGENTA, SKYBLUE }
-        },
-        {
-            { RED, GREEN, BLUE },
-            { YELLOW, ORANGE, PINK },
-            { VIOLET, MAGENTA, SKYBLUE }
-        }
     }];
 
     DisableCursor();
@@ -68,10 +58,8 @@ $nonnil_begin
     }
     EndMode3D();
 
-    [self handleInput];
-
     auto mpos = GetMousePosition();
-        //restrict the mouse to the window 
+        //restrict the mouse to the window
     if (IsWindowFocused()) {
         DisableCursor();
         if (mpos.x < 0)
@@ -82,7 +70,7 @@ $nonnil_begin
             mpos.x = GetScreenWidth();
         if (mpos.y > GetScreenHeight())
             mpos.y = GetScreenHeight();
-    
+
         SetMousePosition(mpos.x, mpos.y);
         DrawCircle(mpos.x, mpos.y, 10, BLACK);
     } else EnableCursor();
@@ -90,11 +78,9 @@ $nonnil_begin
 
 - (void)update
 {
-    for (GridBox *box in grid) {
+    for (GridBox *box in grid.asArray) {
         if ([box detectInteraction: camera]) {
             touchedSomething = true;
-            // box.colour = (Color) { GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
-            // [box hide];
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 [box hide];
             } else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
@@ -103,27 +89,6 @@ $nonnil_begin
             break;
         } else touchedSomething = false;
     }
-}
-
-//thjis should all orbit around the grid
-- (void)handleInput
-{
-    // if (IsKeyDown(KEY_RIGHT)) {
-    //     camera.target = (Vector3) { 0, 0, 0 };
-    //     camera.position = (Vector3) { 5, 5, 5 };
-    // }
-    // if (IsKeyDown(KEY_LEFT)) {
-    //     camera.target = (Vector3) { 0, 0, 0 };
-    //     camera.position = (Vector3) { -5, 5, -5 };
-    // }
-    // if (IsKeyDown(KEY_UP)) {
-    //     camera.target = (Vector3) { 0, 0, 0 };
-    //     camera.position = (Vector3) { 5, 5, -5 };
-    // }
-    // if (IsKeyDown(KEY_DOWN)) {
-    //     camera.target = (Vector3) { 0, 0, 0 };
-    //     camera.position = (Vector3) { -5, 5, 5 };
-    // }
 }
 
 @end

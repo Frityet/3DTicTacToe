@@ -26,10 +26,12 @@
 
 @end
 
-@interface Grid : OFObject<Renderable, Interactable, OFFastEnumeration>
+@interface Grid : OFObject<Renderable, Interactable>
 
 @property Vector3 position;
 @property __strong GridBox *(*boxes)[3][3][3];
+
+@property(readonly, getter=boxesToArray) OFArray<GridBox *> *asArray;
 
 - (instancetype)initAt: (Vector3)position boxColours: (Color(*)[3][3][3])colour;
 
