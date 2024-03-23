@@ -30,13 +30,6 @@ $nonnil_begin
     self->_screenSize = (OFPoint) { 1680, 1050 };
     self->_targetFPS = 60;
 
-    return self;
-}
-
-- (void)start
-{
-    [OFStdOut writeLine: @"Starting game..."];
-
     grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } width: 3 height: 3 depth: 3];
 
     players = [@[
@@ -47,6 +40,11 @@ $nonnil_begin
     currentPlayer = players[0];
     cameraRef = ((LocalPlayer *)currentPlayer).camera;
 
+    return self;
+}
+
+- (void)start
+{
     DisableCursor();
 }
 
