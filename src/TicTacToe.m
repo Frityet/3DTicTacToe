@@ -56,6 +56,8 @@ $nonnil_begin
     BeginMode3D(currentPlayer->camera);
     {
         [grid draw];
+        for (Player *player in players)
+            [player draw];
     }
     EndMode3D();
 
@@ -80,7 +82,7 @@ $nonnil_begin
     DrawFPS(10, 30);
     DrawText([OFString stringWithFormat: @"Player %d info: (position: (%.2f, %.2f, %.2f))",
                     [players indexOfObject: currentPlayer],
-                    currentPlayer->camera.position.x, currentPlayer->camera.position.y, currentPlayer->camera.position.z].UTF8String,
+                    currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z].UTF8String,
                     10, 50,
                     20, DARKGRAY);
     DrawText([OFString stringWithFormat: @"Touching something: %@", hoveringOver ?: @"nil"].UTF8String,

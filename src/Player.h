@@ -21,7 +21,7 @@
 
 $nonnil_begin
 
-@interface Player : OFObject<GameObject> {
+@interface Player : OFObject<Renderable, Updatable> {
     @public Camera3D camera;
 }
 

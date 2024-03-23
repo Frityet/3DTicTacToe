@@ -58,4 +58,17 @@ constexpr auto CAMERA_ROTATION_SPEED = 0.03f;
         CameraYaw(&camera, -CAMERA_ROTATION_SPEED, true);
 }
 
+- (void)draw
+{
+    //for now this will just be a box where the camera is, same rotation and all
+    DrawCubeV(camera.position, (Vector3) { 2, 2, 2 }, _colour);
+    //also draw the ticker above the box
+    auto screenPos = GetWorldToScreen((Vector3){
+        camera.position.x,
+        camera.position.y + 1,
+        camera.position.z
+    }, camera);
+    DrawText([OFString stringWithFormat: @"Player %c", _ticker].UTF8String, screenPos.x, screenPos.y, 20, _colour);
+}
+
 @end

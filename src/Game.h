@@ -20,40 +20,30 @@
 $nonnil_begin
 
 @protocol Renderable
-
 - (void)draw;
 
 @optional
 - (void)hide;
-
 @end
 
 @protocol Interactable
-
 - (nillable Any)detectInteraction: (Camera3D)camera;
-
 @end
 
-@protocol GameObject
-
+@protocol Updatable
 - (void)update;
-
 @end
 
-@protocol GameDelegate<Renderable, GameObject>
-
+@protocol GameDelegate<Renderable, Updatable>
 @property(readonly) OFString *title;
 @property(readonly) OFPoint screenSize;
 @property(readonly) int targetFPS;
 
 - (void)start;
-
 @end
 
 @interface Application : OFObject<OFApplicationDelegate>
-
 @property(readonly, nonnull) OFObject<GameDelegate> *game;
-
 @end
 
 @interface Game : OFObject<GameDelegate>

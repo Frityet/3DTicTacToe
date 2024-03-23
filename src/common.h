@@ -27,6 +27,7 @@ typedef void *nillable nilptr_t;
 #define auto __auto_type
 
 #if !__has_feature(constexpr)
+//make sure force only use on variables by using attribute
 #   define constexpr static const
 #endif
 
