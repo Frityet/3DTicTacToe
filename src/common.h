@@ -26,5 +26,9 @@ typedef void *nillable nilptr_t;
 #define nilptr ((nilptr_t)nil)
 #define auto __auto_type
 
+#if !__has_feature(constexpr)
+#   define constexpr static const
+#endif
+
 #define $nonnil_begin _Pragma("clang assume_nonnull begin")
 #define $nonnil_end _Pragma("clang assume_nonnull end")

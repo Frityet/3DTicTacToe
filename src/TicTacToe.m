@@ -2,6 +2,7 @@
 #include <raylib.h>
 
 #import "Grid.h"
+#import "Player.h"
 
 $nonnil_begin
 
@@ -9,6 +10,7 @@ $nonnil_begin
     Camera3D camera;
     Grid *grid;
     GridBox *hoveringOver;
+    OFMutableArray<Player *> *players;
 }
 
 + (OFString *)title
@@ -31,32 +33,22 @@ $nonnil_begin
         .projection = CAMERA_PERSPECTIVE
     };
 
-    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } width: 3 height: 2 depth: 4];
+    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } width: 3 height: 3 depth: 3];
+
+    players = [@[
+        [[Player alloc] initWithTicker: 'X' colour: RED],
+        [[Player alloc] initWithTicker: 'O' colour: BLUE]
+    ] mutableCopy];
 
     DisableCursor();
 }
 
 
-//internal raylib function we are just gonna use cause im lazy
-RLAPI Vector3 GetCameraForward(Camera *camera);
-RLAPI Vector3 GetCameraUp(Camera *camera);
-RLAPI Vector3 GetCameraRight(Camera *camera);
-
-// Camera movement
-RLAPI void CameraMoveForward(Camera *camera, float distance, bool moveInWorldPlane);
-RLAPI void CameraMoveUp(Camera *camera, float distance);
-RLAPI void CameraMoveRight(Camera *camera, float distance, bool moveInWorldPlane);
-RLAPI void CameraMoveToTarget(Camera *camera, float delta);
-
-// Camera rotation
+//internal raylibs function we are just gonna use cause im lazy
 RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
 RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
-RLAPI void CameraRoll(Camera *camera, float angle);
 
-RLAPI Matrix GetCameraViewMatrix(Camera *camera);
-RLAPI Matrix GetCameraProjectionMatrix(Camera* camera, float aspect);
-
-static const float CAMERA_ROTATION_SPEED = 0.03;
+constexpr float CAMERA_ROTATION_SPEED = 0.03;
 
 //3rd person movement just orbiting around (0, 0, 0)
 - (void)updateCamera

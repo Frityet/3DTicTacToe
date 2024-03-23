@@ -13,28 +13,20 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with 3DTicTacToe.  If not, see <http://www.gnu.org/licenses/>.
+// along with 3DTicTacToe.  If not, see <https://www.gnu.org/licenses/>.
 
-#import "Game.h"
-#import "Player.h"
+#include "Player.h"
 
-@interface GridBox : OFObject<Renderable>
+@implementation Player
 
-@property Vector3 position;
-@property Color colour;
-@property(weak, nullable) Player *occupier;
+- (instancetype)initWithTicker: (char)ticker colour: (Color)colour
+{
+    self = [super init];
 
-- (instancetype)initAt: (Vector3)position colour: (Color)colour;
-- (void)hide;
+    _ticker = ticker;
+    _colour = colour;
 
-@end
-
-@interface Grid : OFObject<Renderable, Interactable>
-
-@property Vector3 position;
-@property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
-
-- (instancetype)initAt: (Vector3)position width: (int)width height: (int)height depth: (int)depth;
+    return self;
+}
 
 @end
-

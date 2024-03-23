@@ -34,10 +34,8 @@
     InitWindow(Game.screenSize.x, Game.screenSize.y, Game.title.UTF8String);
     SetTargetFPS(Game.targetFPS);
     [self.game start];
-    // self.game.previousTime = GetTime();
 
     bool hasUpdate = [self.game respondsToSelector: @selector(update)];
-
     [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *timer) {
         // PollInputEvents();
         if (hasUpdate)
@@ -59,8 +57,6 @@
         if (IsKeyPressed(KEY_F11)) {
             ToggleFullscreen();
         }
-
-
     }];
 }
 
