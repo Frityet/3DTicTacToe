@@ -2,7 +2,7 @@
 #include <raylib.h>
 
 #import "Grid.h"
-#import "Player.h"
+#import "LocalPlayer.h"
 
 $nonnil_begin
 
@@ -11,6 +11,7 @@ $nonnil_begin
     GridBox *hoveringOver;
     OFMutableArray<Player *> *players;
     __weak Player *currentPlayer;
+    const Camera3D *cameraRef;
 }
 
 // + (OFString *)title
@@ -39,11 +40,12 @@ $nonnil_begin
     grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } width: 3 height: 3 depth: 3];
 
     players = [@[
-        [[Player alloc] initWithTicker: 'X' colour: RED],
-        [[Player alloc] initWithTicker: 'O' colour: BLUE]
+        [[LocalPlayer alloc] initWithTicker: 'X' colour: RED],
+        [[LocalPlayer alloc] initWithTicker: 'O' colour: BLUE]
     ] mutableCopy];
 
     currentPlayer = players[0];
+    cameraRef = ((LocalPlayer *)currentPlayer).camera;
 
     DisableCursor();
 }
@@ -53,7 +55,7 @@ $nonnil_begin
 {
     ClearBackground(RAYWHITE);
 
-    BeginMode3D(currentPlayer->camera);
+    BeginMode3D(*cameraRef);
     {
         [grid draw];
         for (Player *player in players)
@@ -93,7 +95,7 @@ $nonnil_begin
 - (void)update
 {
     [currentPlayer update];
-    hoveringOver = [grid detectInteraction: currentPlayer->camera];
+    hoveringOver = [grid detectInteraction: *cameraRef];
     if (hoveringOver) {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             [hoveringOver hide];
@@ -110,6 +112,10 @@ $nonnil_begin
 - (void)switchPlayer
 {
     currentPlayer = players[([players indexOfObject: currentPlayer] + 1) % players.count];
+    [currentPlayer onSwitch];
+    if ([currentPlayer isKindOfClass: LocalPlayer.class]) {
+        cameraRef = ((LocalPlayer *)currentPlayer).camera;
+    }
 }
 
 @end

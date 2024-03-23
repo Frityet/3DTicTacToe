@@ -35,11 +35,9 @@
     SetTargetFPS(self.game.targetFPS);
     [self.game start];
 
-    bool hasUpdate = [self.game respondsToSelector: @selector(update)];
     [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *timer) {
         // PollInputEvents();
-        if (hasUpdate)
-            [self.game update];
+        [self.game update];
 
         BeginDrawing();
         [self.game draw];

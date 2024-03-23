@@ -15,33 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with 3DTicTacToe.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "Player.h"
+#import "Player.h"
 
-@implementation Player
+$nonnil_begin
 
-- (instancetype)initWithTicker: (char)ticker colour: (Color)colour
-{
-    self = [super init];
-
-    _ticker = ticker;
-    _colour = colour;
-
-    return self;
+@interface LocalPlayer : Player {
+    @private Camera3D _camera;
 }
 
-- (void)onSwitch
-{
-    [OFStdOut writeFormat: @"Switched to player %c\n", _ticker];
-}
-
-- (void)update
-{
-    @throw [OFNotImplementedException exceptionWithSelector: @selector(update) object: self];
-}
-
-- (void)draw
-{
-    DrawCubeV(self.position, (Vector3) { 2, 2, 2 }, _colour);
-}
+@property(readonly) const Camera3D *camera;
 
 @end
+
+$nonnil_end

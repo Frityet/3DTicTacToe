@@ -22,11 +22,12 @@
 $nonnil_begin
 
 @interface Player : OFObject<Renderable, Updatable> {
-    @public Camera3D camera;
+    @protected Vector3 _position;
 }
 
 @property(readonly) char ticker;
 @property(readonly) Color colour;
+@property(readonly) Vector3 position;
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour;
 - (void)onSwitch;
