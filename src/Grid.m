@@ -39,6 +39,11 @@
     DrawCubeWiresV(_position, _size, BLACK);
 }
 
+- (void)drawSelectedOutline
+{
+    DrawCubeWiresV(_position, (Vector3) { _size.x + 0.1, _size.y + 0.1, _size.z + 0.1 }, MAROON);
+}
+
 - (void)hide
 {
     _colour = BLANK;

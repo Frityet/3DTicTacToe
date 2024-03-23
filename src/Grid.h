@@ -27,6 +27,8 @@
 - (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour;
 - (void)hide;
 
+- (void)drawSelectedOutline;
+
 @end
 
 @interface Grid : OFObject<Renderable, Interactable>

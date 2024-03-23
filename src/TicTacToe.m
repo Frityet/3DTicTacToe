@@ -14,14 +14,6 @@ $nonnil_begin
     const Camera3D *cameraRef;
 }
 
-// + (OFString *)title
-// { return @"3D Tic Tac Toe"; }
-
-// + (OFPoint)screenSize
-// { return (OFPoint) { 1680, 1050 }; }
-
-// + (int)targetFPS
-// { return 60; }
 - (instancetype)init
 {
     self = [super init];
@@ -58,6 +50,9 @@ $nonnil_begin
         [grid draw];
         for (Player *player in players)
             [player draw];
+
+        if (hoveringOver)
+            [hoveringOver drawSelectedOutline];
     }
     EndMode3D();
 
