@@ -16,6 +16,12 @@
 // along with 3DTicTacToe.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Grid.h"
+#include <float.h>
+
+static inline OFString *colour_to_string(Color color)
+{
+    return [OFString stringWithFormat: @"(r: %.2f, g: %.2f, b: %.2f, a: %.2f)", color.r, color.g, color.b, color.a];
+}
 
 @implementation GridBox {
     int enumIndex;
@@ -35,27 +41,8 @@
 {
     if (_colour.a != 0) {
         DrawCubeV(_position, (Vector3){1, 1, 1}, _colour);
-        DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
     }
-}
-
-- (bool)detectInteraction:(Camera3D)camera
-{
-    auto ray = GetMouseRay(GetMousePosition(), camera);
-    auto collision = GetRayCollisionBox(ray, (BoundingBox) {
-        .min = {
-            _position.x - 0.5,
-            _position.y - 0.5,
-            _position.z - 0.5
-        },
-
-        .max = {
-            _position.x + 0.5,
-            _position.y + 0.5,
-            _position.z + 0.5
-        }
-    });
-    return collision.hit;
+    DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
 }
 
 - (void)hide
@@ -63,65 +50,106 @@
     _colour = BLANK;
 }
 
+- (OFString *)description
+{
+    return [OFString stringWithFormat: @"GridBox at (%.2f, %.2f, %.2f) (hidden: %s)", _position.x, _position.y, _position.z, _colour.a == 0 ? "true" : "false"];
+}
+
 @end
 
 @implementation Grid
 
-- (instancetype)initAt: (Vector3)position boxColours: (Color(*)[3][3][3])colour
+- (instancetype)initAt:(Vector3)position width:(int)width height:(int)height depth:(int)depth
 {
     self = [super init];
 
     _position = position;
 
-    _boxes = (__strong GridBox *(*)[3][3][3])calloc(1, sizeof(*_boxes));
-    if (_boxes == NULL)
-        @throw [OFOutOfMemoryException exceptionWithRequestedSize: sizeof(*_boxes)];
+    auto boxes = [OFMutableArray<OFArray<OFArray<GridBox *> *> *> arrayWithCapacity: width];
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            for (int k = 0; k < 3; k++) {
-                (*_boxes)[i][j][k] = [[GridBox alloc] initAt: (Vector3) {
-                    position.x + i,
-                    position.y + j,
-                    position.z + k
-                } colour: (*colour)[i][j][k]];
+    for (auto x = 0; x < width; x++) {
+        auto row = [OFMutableArray arrayWithCapacity: height];
+        for (auto y = 0; y < height; y++) {
+            auto col = [OFMutableArray arrayWithCapacity: depth];
+            for (auto z = 0; z < depth; z++) {
+                [col addObject: [[GridBox alloc] initAt: (Vector3) {
+                    (position.x + x * 2)-1,
+                    (position.y + y * 2)-1,
+                    (position.z + z * 2)-1
+                } colour: (Color[]){ RED, BLUE, GREEN, YELLOW, ORANGE, PINK, PURPLE }[(x * 3 + y) % 7]]];
             }
+            [col makeImmutable];
+            [row addObject: col];
         }
+        [row makeImmutable];
+        [boxes addObject: row];
     }
+
+    [boxes makeImmutable];
+    _boxes = boxes;
 
     return self;
 }
 
 - (void)draw
 {
-    for (GridBox *box in self.asArray)
-        [box draw];
-}
-
-- (bool)detectInteraction:(Camera3D)camera
-{
-    bool hadInteraction = false;
-    for (GridBox *box in self.asArray) {
-        if ([box detectInteraction: camera])
-            hadInteraction = true;
+    for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
+        for (OFArray<GridBox *> *col in row) {
+            for (GridBox *box in col) {
+                [box draw];
+            }
+        }
     }
-
-    return hadInteraction;
 }
 
-- (OFArray<GridBox *> *)boxesToArray
+- (GridBox *)detectInteraction:(Camera3D)camera
 {
-    auto arr = [OFMutableArray<GridBox *> arrayWithCapacity: 27];
+    auto ray = GetMouseRay(GetMousePosition(), camera);
+    GridBox *nillable closestBox = nil;
+    float closestDistance = FLT_MAX;
+    // for (auto x = 0; x < 3; x++) {
+    //     for (auto y = 0; y < 3; y++) {
+    //         for (auto z = 0; z < 3; z++) {
+    //             GridBox *box = (*_boxes)[x][y][z];
+    //             auto collision = GetRayCollisionBox(ray, (BoundingBox) {
+    //                 (Vector3) { box.position.x - 0.5f, box.position.y - 0.5f, box.position.z - 0.5f },
+    //                 (Vector3) { box.position.x + 0.5f, box.position.y + 0.5f, box.position.z + 0.5f }
+    //             });
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            for (int k = 0; k < 3; k++) {
-                [arr addObject: (*_boxes)[i][j][k]];
+
+    //             if (collision.hit) {
+    //                 if (collision.distance < closestDistance) {
+    //                     closestDistance = collision.distance;
+    //                     closestBox = box;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+    for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
+        for (OFArray<GridBox *> *col in row) {
+            for (GridBox *box in col) {
+                auto collision = GetRayCollisionBox(ray, (BoundingBox) {
+                    (Vector3) { box.position.x - 0.5f, box.position.y - 0.5f, box.position.z - 0.5f },
+                    (Vector3) { box.position.x + 0.5f, box.position.y + 0.5f, box.position.z + 0.5f }
+                });
+
+                if (collision.hit) {
+                    if (collision.distance < closestDistance) {
+                        closestDistance = collision.distance;
+                        closestBox = box;
+                    }
+                }
             }
         }
     }
 
-    return arr;
+    return closestBox;
+}
+
+- (OFString *)description
+{
+    return [OFString stringWithFormat: @"Grid at (%.2f, %.2f, %.2f)", _position.x, _position.y, _position.z];
 }
 
 @end

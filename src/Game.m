@@ -39,7 +39,7 @@
     bool hasUpdate = [self.game respondsToSelector: @selector(update)];
 
     [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *timer) {
-        PollInputEvents();
+        // PollInputEvents();
         if (hasUpdate)
             [self.game update];
 
@@ -60,7 +60,7 @@
             ToggleFullscreen();
         }
 
-        
+
     }];
 }
 

@@ -28,4 +28,3 @@ typedef void *nillable nilptr_t;
 
 #define $nonnil_begin _Pragma("clang assume_nonnull begin")
 #define $nonnil_end _Pragma("clang assume_nonnull end")
-

@@ -30,7 +30,7 @@ $nonnil_begin
 
 @protocol Interactable
 
-- (bool)detectInteraction: (Camera3D)camera;
+- (__kindof OFObject *nillable)detectInteraction: (Camera3D)camera;
 
 @end
 

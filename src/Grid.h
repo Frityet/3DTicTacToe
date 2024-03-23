@@ -17,7 +17,7 @@
 
 #import "Game.h"
 
-@interface GridBox : OFObject<Renderable, Interactable>
+@interface GridBox : OFObject<Renderable>
 
 @property Vector3 position;
 @property Color colour;
@@ -29,10 +29,9 @@
 @interface Grid : OFObject<Renderable, Interactable>
 
 @property Vector3 position;
-@property __strong GridBox *(*boxes)[3][3][3];
+@property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
 
-@property(readonly, getter=boxesToArray) OFArray<GridBox *> *asArray;
-
-- (instancetype)initAt: (Vector3)position boxColours: (Color(*)[3][3][3])colour;
+- (instancetype)initAt: (Vector3)position width: (int)width height: (int)height depth: (int)depth;
 
 @end
+

@@ -8,14 +8,14 @@ $nonnil_begin
 @implementation Game {
     Camera3D camera;
     Grid *grid;
-    bool touchedSomething;
+    GridBox *hoveringOver;
 }
 
 + (OFString *)title
 { return @"3D Tic Tac Toe"; }
 
 + (OFPoint)screenSize
-{ return (OFPoint) { 800, 600 }; }
+{ return (OFPoint) { 1680, 1050 }; }
 
 + (int)targetFPS
 { return 60; }
@@ -25,32 +25,59 @@ $nonnil_begin
     [OFStdOut writeLine: @"Starting game..."];
 
     camera = (Camera3D) {
-        .position = { 5, 5, 5 },
+        .position = { 7.5, 7.5, 7.5 },
         .up = { 0, 1, 0 },
         .fovy = 45,
         .projection = CAMERA_PERSPECTIVE
     };
 
-    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } boxColours: &(Color[3][3][3]){
-        [0 ... 2] = {
-            { RED, GREEN, BLUE },
-            { YELLOW, ORANGE, PINK },
-            { VIOLET, MAGENTA, SKYBLUE }
-        },
-    }];
+    grid = [[Grid alloc] initAt: (Vector3){ -1, -1, -1 } width: 3 height: 2 depth: 4];
 
     DisableCursor();
 }
 
+
+//internal raylib function we are just gonna use cause im lazy
+RLAPI Vector3 GetCameraForward(Camera *camera);
+RLAPI Vector3 GetCameraUp(Camera *camera);
+RLAPI Vector3 GetCameraRight(Camera *camera);
+
+// Camera movement
+RLAPI void CameraMoveForward(Camera *camera, float distance, bool moveInWorldPlane);
+RLAPI void CameraMoveUp(Camera *camera, float distance);
+RLAPI void CameraMoveRight(Camera *camera, float distance, bool moveInWorldPlane);
+RLAPI void CameraMoveToTarget(Camera *camera, float delta);
+
+// Camera rotation
+RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
+RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
+RLAPI void CameraRoll(Camera *camera, float angle);
+
+RLAPI Matrix GetCameraViewMatrix(Camera *camera);
+RLAPI Matrix GetCameraProjectionMatrix(Camera* camera, float aspect);
+
+static const float CAMERA_ROTATION_SPEED = 0.03;
+
+//3rd person movement just orbiting around (0, 0, 0)
+- (void)updateCamera
+{
+    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
+        CameraPitch(&camera, -CAMERA_ROTATION_SPEED, true /*view must be locked*/, true /*rotating around the target*/, false);
+    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
+        CameraPitch(&camera, CAMERA_ROTATION_SPEED, true, true, false);
+    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+        CameraYaw(&camera, CAMERA_ROTATION_SPEED, true);
+    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+        CameraYaw(&camera, -CAMERA_ROTATION_SPEED, true);
+}
+
 - (void)draw
 {
-    UpdateCamera(&camera, CAMERA_THIRD_PERSON);
-
     ClearBackground(RAYWHITE);
     DrawText(Game.title.UTF8String, 10, 10, 20, DARKGRAY);
     DrawFPS(10, 30);
     DrawText([OFString stringWithFormat: @"Player info: (position: (%.2f, %.2f, %.2f))", camera.position.x, camera.position.y, camera.position.z].UTF8String, 10, 50, 20, DARKGRAY);
-    DrawText([OFString stringWithFormat: @"Touching something: %@", touchedSomething ? @"yes" : @"no"].UTF8String, 10, 70, 20, DARKGRAY);
+    DrawText([OFString stringWithFormat: @"Touching something: %@", hoveringOver ?: @"nil"].UTF8String, 10, 70, 20, DARKGRAY);
 
     BeginMode3D(camera);
     {
@@ -58,7 +85,7 @@ $nonnil_begin
     }
     EndMode3D();
 
-    auto mpos = GetMousePosition();
+    Vector2 mpos = GetMousePosition();
         //restrict the mouse to the window
     if (IsWindowFocused()) {
         DisableCursor();
@@ -78,16 +105,14 @@ $nonnil_begin
 
 - (void)update
 {
-    for (GridBox *box in grid.asArray) {
-        if ([box detectInteraction: camera]) {
-            touchedSomething = true;
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                [box hide];
-            } else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-                box.colour = (Color) { GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
-            }
-            break;
-        } else touchedSomething = false;
+    [self updateCamera];
+    hoveringOver = [grid detectInteraction: camera];
+    if (hoveringOver) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            [hoveringOver hide];
+        } else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+            hoveringOver.colour = (Color) { GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
+        }
     }
 }
 
