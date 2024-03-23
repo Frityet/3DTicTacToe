@@ -68,9 +68,9 @@ static inline OFString *colour_to_string(Color color)
     auto boxes = [OFMutableArray<OFArray<OFArray<GridBox *> *> *> arrayWithCapacity: width];
 
     for (auto x = 0; x < width; x++) {
-        auto row = [OFMutableArray arrayWithCapacity: height];
+        auto row = [OFMutableArray<OFArray<GridBox *> *> arrayWithCapacity: height];
         for (auto y = 0; y < height; y++) {
-            auto col = [OFMutableArray arrayWithCapacity: depth];
+            auto col = [OFMutableArray<GridBox *> arrayWithCapacity: depth];
             for (auto z = 0; z < depth; z++) {
                 [col addObject: [[GridBox alloc] initAt: (Vector3) {
                     (position.x + x * 2)-1,
