@@ -17,11 +17,20 @@
 
 #import "common.h"
 
-@interface Player : OFObject
+#import "Game.h"
+
+$nonnil_begin
+
+@interface Player : OFObject<GameObject> {
+    @public Camera3D camera;
+}
 
 @property(readonly) char ticker;
 @property(readonly) Color colour;
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour;
+- (void)onSwitch;
 
 @end
+
+$nonnil_end

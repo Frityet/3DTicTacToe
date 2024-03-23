@@ -25,8 +25,37 @@
 
     _ticker = ticker;
     _colour = colour;
+    camera = (Camera3D) {
+        .position = { 7.5, 7.5, 7.5 },
+        .up = { 0, 1, 0 },
+        .fovy = 45,
+        .projection = CAMERA_PERSPECTIVE
+    };
 
     return self;
+}
+
+- (void)onSwitch
+{
+    [OFStdOut writeFormat: @"Switched to player %c\n", _ticker];
+}
+
+//internal raylibs function we are just gonna use cause im lazy
+RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
+RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
+
+constexpr auto CAMERA_ROTATION_SPEED = 0.03f;
+
+- (void)update
+{
+    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
+        CameraPitch(&camera, -CAMERA_ROTATION_SPEED, true /*view must be locked*/, true /*rotating around the target*/, false);
+    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
+        CameraPitch(&camera, CAMERA_ROTATION_SPEED, true, true, false);
+    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+        CameraYaw(&camera, CAMERA_ROTATION_SPEED, true);
+    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+        CameraYaw(&camera, -CAMERA_ROTATION_SPEED, true);
 }
 
 @end

@@ -18,21 +18,15 @@
 #include "Grid.h"
 #include <float.h>
 
-static inline OFString *colour_to_string(Color color)
-{
-    return [OFString stringWithFormat: @"(r: %.2f, g: %.2f, b: %.2f, a: %.2f)", color.r, color.g, color.b, color.a];
-}
+@implementation GridBox
 
-@implementation GridBox {
-    int enumIndex;
-}
-
-- (instancetype)initAt: (Vector3)position colour: (Color)colour
+- (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour
 {
     self = [super init];
 
     _position = position;
     _colour = colour;
+    _size = size;
 
     return self;
 }
@@ -40,9 +34,9 @@ static inline OFString *colour_to_string(Color color)
 - (void)draw
 {
     if (_colour.a != 0) {
-        DrawCubeV(_position, (Vector3){1, 1, 1}, _colour);
+        DrawCubeV(_position, _size, _colour);
     }
-    DrawCubeWiresV(_position, (Vector3){1, 1, 1}, BLACK);
+    DrawCubeWiresV(_position, _size, BLACK);
 }
 
 - (void)hide
@@ -52,7 +46,7 @@ static inline OFString *colour_to_string(Color color)
 
 - (OFString *)description
 {
-    return [OFString stringWithFormat: @"GridBox at (%.2f, %.2f, %.2f) (hidden: %s)", _position.x, _position.y, _position.z, _colour.a == 0 ? "true" : "false"];
+    return [OFString stringWithFormat: @"GridBox at (%.2f, %.2f, %.2f) colour: (#%02X%02X%02X%02X)", _position.x, _position.y, _position.z, (int)_colour.r, (int)_colour.g, (int)_colour.b, (int)_colour.a];
 }
 
 @end
@@ -76,7 +70,7 @@ static inline OFString *colour_to_string(Color color)
                     (position.x + x * 2)-1,
                     (position.y + y * 2)-1,
                     (position.z + z * 2)-1
-                } colour: (Color[]){ RED, BLUE, GREEN, YELLOW, ORANGE, PINK, PURPLE }[(x * 3 + y) % 7]]];
+                } size: (Vector3){1, 1, 1} colour: (Color[]){ RED, BLUE, GREEN, YELLOW, ORANGE, PINK, PURPLE }[(x * 3 + y) % 7]]];
             }
             [col makeImmutable];
             [row addObject: col];

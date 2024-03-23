@@ -30,20 +30,23 @@ $nonnil_begin
 
 @protocol Interactable
 
-- (__kindof OFObject *nillable)detectInteraction: (Camera3D)camera;
+- (nillable Any)detectInteraction: (Camera3D)camera;
 
 @end
 
-@protocol GameDelegate<Renderable>
+@protocol GameObject
 
-@property(class, readonly) OFString *title;
-@property(class, readonly) OFPoint screenSize;
-@property(class, readonly) int targetFPS;
+- (void)update;
+
+@end
+
+@protocol GameDelegate<Renderable, GameObject>
+
+@property(readonly) OFString *title;
+@property(readonly) OFPoint screenSize;
+@property(readonly) int targetFPS;
 
 - (void)start;
-
-@optional
-- (void)update;
 
 @end
 
@@ -55,6 +58,9 @@ $nonnil_begin
 
 @interface Game : OFObject<GameDelegate>
 @property double previousTime, currentTime, deltaTime;
+@property(readonly) OFString *title;
+@property(readonly) OFPoint screenSize;
+@property(readonly) int targetFPS;
 @end
 
 $nonnil_end

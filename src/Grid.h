@@ -20,11 +20,11 @@
 
 @interface GridBox : OFObject<Renderable>
 
-@property Vector3 position;
+@property Vector3 position, size;
 @property Color colour;
 @property(weak, nullable) Player *occupier;
 
-- (instancetype)initAt: (Vector3)position colour: (Color)colour;
+- (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour;
 - (void)hide;
 
 @end

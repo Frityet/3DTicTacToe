@@ -30,9 +30,9 @@
 
 - (void)applicationDidFinishLaunching: (OFNotification *)notification
 {
-    OFLog(@"Starting game %@ (%@)", Game.title, self.game.className);
-    InitWindow(Game.screenSize.x, Game.screenSize.y, Game.title.UTF8String);
-    SetTargetFPS(Game.targetFPS);
+    OFLog(@"Starting game %@ (%@)", self.game.title, self.game.className);
+    InitWindow(self.game.screenSize.x, self.game.screenSize.y, self.game.title.UTF8String);
+    SetTargetFPS(self.game.targetFPS);
     [self.game start];
 
     bool hasUpdate = [self.game respondsToSelector: @selector(update)];
