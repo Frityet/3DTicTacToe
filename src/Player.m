@@ -29,9 +29,15 @@
     return self;
 }
 
-- (void)onSwitch
+- (void)onSwitchIn
 {
     [OFStdOut writeFormat: @"Switched to player %c\n", _ticker];
+    _isTurn = true;
+}
+
+- (void)onSwitchOut
+{
+    _isTurn = false;
 }
 
 - (void)update

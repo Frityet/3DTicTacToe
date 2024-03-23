@@ -28,9 +28,11 @@ $nonnil_begin
 @property(readonly) char ticker;
 @property(readonly) Color colour;
 @property(readonly) Vector3 position;
+@property(readonly) bool isTurn;
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour;
-- (void)onSwitch;
+- (void)onSwitchIn;
+- (void)onSwitchOut;
 
 @end
 

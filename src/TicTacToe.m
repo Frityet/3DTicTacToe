@@ -111,8 +111,9 @@ $nonnil_begin
 
 - (void)switchPlayer
 {
+    [currentPlayer onSwitchOut];
     currentPlayer = players[([players indexOfObject: currentPlayer] + 1) % players.count];
-    [currentPlayer onSwitch];
+    [currentPlayer onSwitchIn];
     if ([currentPlayer isKindOfClass: LocalPlayer.class]) {
         cameraRef = ((LocalPlayer *)currentPlayer).camera;
     }
