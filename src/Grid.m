@@ -107,25 +107,6 @@ static inline OFString *colour_to_string(Color color)
     auto ray = GetMouseRay(GetMousePosition(), camera);
     GridBox *nillable closestBox = nil;
     float closestDistance = FLT_MAX;
-    // for (auto x = 0; x < 3; x++) {
-    //     for (auto y = 0; y < 3; y++) {
-    //         for (auto z = 0; z < 3; z++) {
-    //             GridBox *box = (*_boxes)[x][y][z];
-    //             auto collision = GetRayCollisionBox(ray, (BoundingBox) {
-    //                 (Vector3) { box.position.x - 0.5f, box.position.y - 0.5f, box.position.z - 0.5f },
-    //                 (Vector3) { box.position.x + 0.5f, box.position.y + 0.5f, box.position.z + 0.5f }
-    //             });
-
-
-    //             if (collision.hit) {
-    //                 if (collision.distance < closestDistance) {
-    //                     closestDistance = collision.distance;
-    //                     closestBox = box;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
     for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
         for (OFArray<GridBox *> *col in row) {
             for (GridBox *box in col) {
