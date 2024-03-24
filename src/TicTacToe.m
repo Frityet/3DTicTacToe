@@ -75,9 +75,7 @@ $nonnil_begin
 
     DrawText(self.title.UTF8String, 10, 10, 20, DARKGRAY);
     DrawFPS(10, 30);
-    DrawText([OFString stringWithFormat: @"Player %d info: (position: (%.2f, %.2f, %.2f))",
-                    [players indexOfObject: currentPlayer],
-                    currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z].UTF8String,
+    DrawText(currentPlayer.description.UTF8String,
                     10, 50,
                     20, DARKGRAY);
     DrawText([OFString stringWithFormat: @"Touching something: %@", hoveringOver ?: @"nil"].UTF8String,
@@ -95,8 +93,19 @@ $nonnil_begin
 
             Player *winner = [grid checkWin];
             if (winner) {
+                [winner onWin];
+
                 [OFStdOut writeFormat: @"Player %c wins!\n", winner.ticker];
-                [OFApplication terminate];
+                for (OFArray<OFArray<GridBox *> *> *row in grid.boxes) {
+                    for (OFArray<GridBox *> *col in row) {
+                        for (GridBox *box in col) {
+                            box.occupier = nil;
+                        }
+                    }
+                }
+
+                currentPlayer = players[0];
+                return;
             }
 
             [self switchPlayer];

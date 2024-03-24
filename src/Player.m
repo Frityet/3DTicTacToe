@@ -45,9 +45,22 @@
     @throw [OFNotImplementedException exceptionWithSelector: @selector(update) object: self];
 }
 
+- (void)onWin
+{
+    self->_wins++;
+}
+
 - (void)draw
 {
     DrawCubeV(self.position, (Vector3) { 2, 2, 2 }, _colour);
+}
+
+- (OFString *)description
+{
+    return [OFString stringWithFormat: @"Player %c at (%.2f, %.2f, %.2f) colour: (#%02X%02X%02X%02X) wins: %u",
+                                        _ticker, self.position.x, self.position.y, self.position.z,
+                                        (int)_colour.r, (int)_colour.g, (int)_colour.b, (int)_colour.a,
+                                        _wins];
 }
 
 @end
