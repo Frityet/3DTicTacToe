@@ -62,15 +62,15 @@ $nonnil_begin
 
     DrawText(self.title.UTF8String, 10, 10, 20, DARKGRAY);
     DrawFPS(10, 30);
+    //the current player and their wins
     DrawText(currentPlayer.description.UTF8String, 10, 50, 20, DARKGRAY);
-    DrawText([OFString stringWithFormat: @"Touching something: %@", hoveringOver ?: @"nil"].UTF8String,
-        10, 70,
-        20, DARKGRAY);
 }
 
 - (void)update
 {
     [currentPlayer update];
+
+    //checks what cube the cursor is hovering over
     hoveringOver = [grid detectInteraction: *cameraRef];
     if (hoveringOver) {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) and !hoveringOver.occupier) {
@@ -103,6 +103,8 @@ $nonnil_begin
                 players[[players indexOfObject: player]] = [player initWithTicker: player.ticker colour: player.colour];
             }
         }
+
+        grid = [grid initAt: grid.position width: grid.size.x height: grid.size.y depth: grid.size.z];
     }
 }
 

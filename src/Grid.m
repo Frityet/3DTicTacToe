@@ -83,6 +83,8 @@ $nonnil_begin
     [boxes makeImmutable];
     _boxes = boxes;
 
+    _size = (Vector3) {width, height, depth};
+
     return self;
 }
 

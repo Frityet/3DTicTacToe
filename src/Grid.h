@@ -30,7 +30,7 @@
 
 @interface Grid : OFObject<Renderable, Interactable>
 
-@property Vector3 position;
+@property Vector3 position, size;
 @property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
 
 - (instancetype)initAt: (Vector3)position width: (unsigned int)width height: (unsigned int)height depth: (unsigned int)depth;
