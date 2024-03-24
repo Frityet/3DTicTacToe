@@ -33,7 +33,7 @@
 @property Vector3 position;
 @property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
 
-- (instancetype)initAt: (Vector3)position width: (int)width height: (int)height depth: (int)depth;
+- (instancetype)initAt: (Vector3)position width: (unsigned int)width height: (unsigned int)height depth: (unsigned int)depth;
 - (Player *nillable)checkWin;
 
 @end

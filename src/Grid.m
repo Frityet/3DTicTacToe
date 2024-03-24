@@ -18,6 +18,8 @@
 #include "Grid.h"
 #include <float.h>
 
+$nonnil_begin
+
 @implementation GridBox
 
 - (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour
@@ -52,7 +54,7 @@
 
 @implementation Grid
 
-- (instancetype)initAt:(Vector3)position width:(int)width height:(int)height depth:(int)depth
+- (instancetype)initAt:(Vector3)position width: (unsigned int)width height: (unsigned int)height depth: (unsigned int)depth
 {
     self = [super init];
 
@@ -60,11 +62,11 @@
 
     auto boxes = [OFMutableArray<OFArray<OFArray<GridBox *> *> *> arrayWithCapacity: width];
 
-    for (auto x = 0; x < width; x++) {
+    for (auto x = 0u; x < width; x++) {
         auto row = [OFMutableArray<OFArray<GridBox *> *> arrayWithCapacity: height];
-        for (auto y = 0; y < height; y++) {
+        for (auto y = 0u; y < height; y++) {
             auto col = [OFMutableArray<GridBox *> arrayWithCapacity: depth];
-            for (auto z = 0; z < depth; z++) {
+            for (auto z = 0u; z < depth; z++) {
                 [col addObject: [[GridBox alloc] initAt: (Vector3) {
                     (position.x + x * 2)-1,
                     (position.y + y * 2)-1,
@@ -95,7 +97,7 @@
     }
 }
 
-- (GridBox *)detectInteraction:(Camera3D)camera
+- (GridBox *nillable)detectInteraction:(Camera3D)camera
 {
     auto ray = GetMouseRay(GetMousePosition(), camera);
     GridBox *nillable closestBox = nilptr;
@@ -126,11 +128,11 @@
     // Check rows
     for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
         for (OFArray<GridBox *> *col in row) {
-            auto first = col[0].occupier;
+            Player *nillable first = col[0].occupier;
             if (first == nilptr)
                 continue;
 
-            bool win = true;
+            auto win = true;
             for (GridBox *box in col) {
                 if (box.occupier != first) {
                     win = false;
@@ -144,14 +146,14 @@
     }
 
     // Check columns
-    for (auto x = 0UL; x < _boxes.count; x++) {
-        for (auto z = 0UL; z < _boxes[0][0].count; z++) {
+    for (auto x = 0ul; x < _boxes.count; x++) {
+        for (auto z = 0ul; z < _boxes[0][0].count; z++) {
             auto first = _boxes[x][0][z].occupier;
             if (first == nilptr)
                 continue;
 
-            bool win = true;
-            for (auto y = 0UL; y < _boxes[0].count; y++) {
+            auto win = true;
+            for (auto y = 0ul; y < _boxes[0].count; y++) {
                 if (_boxes[x][y][z].occupier != first) {
                     win = false;
                     break;
@@ -166,8 +168,8 @@
     // Check diagonals
     auto first = _boxes[0][0][0].occupier;
     if (first != nilptr) {
-        bool win = true;
-        for (auto i = 0UL; i < _boxes.count; i++) {
+        auto win = true;
+        for (auto i = 0ul; i < _boxes.count; i++) {
             if (_boxes[i][i][i].occupier != first) {
                 win = false;
                 break;
@@ -180,8 +182,8 @@
 
     first = _boxes[0][_boxes[0].count - 1][0].occupier;
     if (first != nilptr) {
-        bool win = true;
-        for (auto i = 0UL; i < _boxes.count; i++) {
+        auto win = true;
+        for (auto i = 0ul; i < _boxes.count; i++) {
             if (_boxes[i][_boxes[0].count - 1 - i][i].occupier != first) {
                 win = false;
                 break;
@@ -201,3 +203,5 @@
 }
 
 @end
+
+$nonnil_end

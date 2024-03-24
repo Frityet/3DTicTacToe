@@ -17,6 +17,8 @@
 
 #include "Player.h"
 
+$nonnil_begin
+
 @implementation Player
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour
@@ -64,3 +66,5 @@
 }
 
 @end
+
+$nonnil_end

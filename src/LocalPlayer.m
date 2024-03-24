@@ -17,6 +17,8 @@
 
 #include "LocalPlayer.h"
 
+$nonnil_begin
+
 @implementation LocalPlayer
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour
@@ -57,4 +59,4 @@ constexpr auto CAMERA_ROTATION_SPEED = 0.03f;
 
 @end
 
-
+$nonnil_end

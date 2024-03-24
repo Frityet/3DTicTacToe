@@ -31,7 +31,7 @@ $nonnil_begin
 - (void)update;
 @end
 
-@protocol GameDelegate<Renderable, Updatable>
+@interface Game : OFObject<Updatable, Renderable>
 @property(readonly) OFString *title;
 @property(readonly) OFPoint screenSize;
 @property(readonly) int targetFPS;
@@ -40,14 +40,9 @@ $nonnil_begin
 @end
 
 @interface Application : OFObject<OFApplicationDelegate>
-@property(readonly, nonnull) OFObject<GameDelegate> *game;
+@property(readonly) Game *game;
 @end
 
-@interface Game : OFObject<GameDelegate>
-@property double previousTime, currentTime, deltaTime;
-@property(readonly) OFString *title;
-@property(readonly) OFPoint screenSize;
-@property(readonly) int targetFPS;
-@end
+
 
 $nonnil_end

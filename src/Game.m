@@ -17,6 +17,8 @@
 
 #include "Game.h"
 
+$nonnil_begin
+
 @implementation Application
 
 - (instancetype)init
@@ -28,14 +30,14 @@
     return self;
 }
 
-- (void)applicationDidFinishLaunching: (OFNotification *)notification
+- (void)applicationDidFinishLaunching:_
 {
     OFLog(@"Starting game %@ (%@)", self.game.title, self.game.className);
     InitWindow(self.game.screenSize.x, self.game.screenSize.y, self.game.title.UTF8String);
     SetTargetFPS(self.game.targetFPS);
 
     [OFTimer scheduledTimerWithTimeInterval: 0 target: self.game selector: @selector(start) repeats: false];
-    [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *timer) {
+    [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *) {
         [self.game update];
 
         BeginDrawing();
@@ -73,3 +75,4 @@ int main(int argc, char *nonnil argv[nonnil])
 }
 #endif
 
+$nonnil_end

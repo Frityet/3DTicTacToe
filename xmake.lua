@@ -14,7 +14,7 @@ local sanitizers = { "address", "leak", "undefined" }
 local mflags = {
     release = {},
     debug = {
-        "-Wno-unused-function", "-Wno-unused-parameter", "-Wno-unused-variable"
+        "-Wno-unused-function", "-Wno-unused-parameter", "-Wno-unused-variable",
     },
     regular = {
         "-Wall", "-Wextra", "-Werror",
@@ -27,6 +27,7 @@ local mflags = {
         "-Wenum-conversion",
         "-Wenum-enum-conversion",
         "-Wno-missing-braces",
+        "-Wno-c2x-extensions"
     }
 }
 
@@ -55,6 +56,8 @@ do
 
     add_files("src/**.m")
     add_headerfiles("src/**.h")
+    set_pcheader("src/common.h")
+    set_pmheader("src/common.h")
 
     add_mflags(mflags.regular)
     add_ldflags(ldflags.regular)
@@ -65,7 +68,7 @@ do
 
         add_defines("PROJECT_DEBUG")
         if is_mode("check") then
-            cprint("${yellow}WARNING: Sanitizers make ObjFW run extremely slow")
+            print("${yellow}WARNING: Sanitizers make ObjFW run extremely slow")
             for _, v in ipairs(sanitizers) do
                 add_mflags("-fsanitize=" .. v)
                 add_ldflags("-fsanitize=" .. v)

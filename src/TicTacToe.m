@@ -7,11 +7,11 @@
 $nonnil_begin
 
 @implementation Game {
-    Grid *grid;
-    GridBox *hoveringOver;
-    OFMutableArray<Player *> *players;
-    __weak Player *currentPlayer;
-    const Camera3D *cameraRef;
+    Grid *nonnil grid;
+    GridBox *nillable hoveringOver;
+    OFMutableArray<Player *> *nonnil players;
+    __weak Player *nonnil currentPlayer;
+    const Camera3D *nonnil cameraRef;
 }
 
 - (instancetype)init
@@ -75,9 +75,7 @@ $nonnil_begin
 
     DrawText(self.title.UTF8String, 10, 10, 20, DARKGRAY);
     DrawFPS(10, 30);
-    DrawText(currentPlayer.description.UTF8String,
-                    10, 50,
-                    20, DARKGRAY);
+    DrawText(currentPlayer.description.UTF8String, 10, 50, 20, DARKGRAY);
     DrawText([OFString stringWithFormat: @"Touching something: %@", hoveringOver ?: @"nil"].UTF8String,
         10, 70,
         20, DARKGRAY);
@@ -91,7 +89,7 @@ $nonnil_begin
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) and !hoveringOver.occupier) {
             hoveringOver.occupier = currentPlayer;
 
-            Player *winner = [grid checkWin];
+            Player *nillable winner = [grid checkWin];
             if (winner) {
                 [winner onWin];
 
@@ -109,6 +107,14 @@ $nonnil_begin
             }
 
             [self switchPlayer];
+        }
+    }
+
+    if (IsKeyPressed('R')) {
+        for (Player *player in players) {
+            if ([player isKindOfClass: LocalPlayer.class]) {
+                players[[players indexOfObject: player]] = [player initWithTicker: player.ticker colour: player.colour];
+            }
         }
     }
 }
