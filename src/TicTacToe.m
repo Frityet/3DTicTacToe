@@ -8,9 +8,13 @@ $nonnil_begin
 
 @implementation Game {
     Grid *nonnil grid;
+
+    //What the current player (the camera) is hovering  over
     GridBox *nillable hoveringOver;
     OFMutableArray<Player *> *nonnil players;
     __weak Player *nonnil currentPlayer;
+
+    //Reference to the currentPlayer's camera if it is a LocalPlayer
     const Camera3D *nonnil cameraRef;
 }
 
@@ -22,7 +26,7 @@ $nonnil_begin
     self->_screenSize = (OFPoint) { 1680, 1050 };
     self->_targetFPS = 60;
 
-    grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } width: 3 height: 3 depth: 3];
+    grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } width: 4 height: 4 depth: 4];
 
     players = [@[
         [[LocalPlayer alloc] initWithTicker: 'X' colour: RED],
@@ -35,11 +39,11 @@ $nonnil_begin
     return self;
 }
 
+//run once just before the `draw` and `update` will start running
 - (void)start
 {
-    DisableCursor();
-}
 
+}
 
 - (void)draw
 {
@@ -55,23 +59,6 @@ $nonnil_begin
             [hoveringOver drawSelectedOutline];
     }
     EndMode3D();
-
-    Vector2 mpos = GetMousePosition();
-        //restrict the mouse to the window
-    if (IsWindowFocused()) {
-        DisableCursor();
-        if (mpos.x < 0)
-            mpos.x = 0;
-        if (mpos.y < 0)
-            mpos.y = 0;
-        if (mpos.x > GetScreenWidth())
-            mpos.x = GetScreenWidth();
-        if (mpos.y > GetScreenHeight())
-            mpos.y = GetScreenHeight();
-
-        SetMousePosition(mpos.x, mpos.y);
-        DrawCircle(mpos.x, mpos.y, 10, BLACK);
-    } else EnableCursor();
 
     DrawText(self.title.UTF8String, 10, 10, 20, DARKGRAY);
     DrawFPS(10, 30);
