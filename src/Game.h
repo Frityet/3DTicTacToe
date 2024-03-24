@@ -21,9 +21,6 @@ $nonnil_begin
 
 @protocol Renderable
 - (void)draw;
-
-@optional
-- (void)hide;
 @end
 
 @protocol Interactable

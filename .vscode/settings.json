@@ -4,5 +4,6 @@
     },
     "explorer.fileNesting.patterns": {
         "*.h": "${capture}.m",
+        "xmake.lua" : "compile_commands.json"
     }
 }

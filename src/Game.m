@@ -33,10 +33,9 @@
     OFLog(@"Starting game %@ (%@)", self.game.title, self.game.className);
     InitWindow(self.game.screenSize.x, self.game.screenSize.y, self.game.title.UTF8String);
     SetTargetFPS(self.game.targetFPS);
-    
+
     [OFTimer scheduledTimerWithTimeInterval: 0 target: self.game selector: @selector(start) repeats: false];
     [OFTimer scheduledTimerWithTimeInterval: 0 repeats: true block: ^(OFTimer *timer) {
-        // PollInputEvents();
         [self.game update];
 
         BeginDrawing();

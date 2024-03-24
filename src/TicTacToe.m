@@ -90,15 +90,17 @@ $nonnil_begin
     [currentPlayer update];
     hoveringOver = [grid detectInteraction: *cameraRef];
     if (hoveringOver) {
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            [hoveringOver hide];
-        } else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
-            hoveringOver.colour = (Color) { GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255 };
-        }
-    }
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) and !hoveringOver.occupier) {
+            hoveringOver.occupier = currentPlayer;
 
-    if (IsKeyPressed(KEY_SPACE)) {
-        [self switchPlayer];
+            Player *winner = [grid checkWin];
+            if (winner) {
+                [OFStdOut writeFormat: @"Player %c wins!\n", winner.ticker];
+                [OFApplication terminate];
+            }
+
+            [self switchPlayer];
+        }
     }
 }
 

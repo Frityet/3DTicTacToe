@@ -25,7 +25,6 @@
     self = [super init];
 
     _position = position;
-    _colour = colour;
     _size = size;
 
     return self;
@@ -33,9 +32,7 @@
 
 - (void)draw
 {
-    if (_colour.a != 0) {
-        DrawCubeV(_position, _size, _colour);
-    }
+    DrawCubeV(_position, _size, _occupier ? _occupier.colour : BLANK);
     DrawCubeWiresV(_position, _size, BLACK);
 }
 
@@ -44,14 +41,11 @@
     DrawCubeWiresV(_position, (Vector3) { _size.x + 0.1, _size.y + 0.1, _size.z + 0.1 }, MAROON);
 }
 
-- (void)hide
-{
-    _colour = BLANK;
-}
-
 - (OFString *)description
 {
-    return [OFString stringWithFormat: @"GridBox at (%.2f, %.2f, %.2f) colour: (#%02X%02X%02X%02X)", _position.x, _position.y, _position.z, (int)_colour.r, (int)_colour.g, (int)_colour.b, (int)_colour.a];
+    return [OFString stringWithFormat: @"GridBox at (%.2f, %.2f, %.2f) colour: (#%02X%02X%02X%02X)",
+                                                    _position.x, _position.y, _position.z,
+                                                    (int)_occupier.colour.r, (int)_occupier.colour.g, (int)_occupier.colour.b, (int)_occupier.colour.a];
 }
 
 @end
@@ -104,7 +98,7 @@
 - (GridBox *)detectInteraction:(Camera3D)camera
 {
     auto ray = GetMouseRay(GetMousePosition(), camera);
-    GridBox *nillable closestBox = nil;
+    GridBox *nillable closestBox = nilptr;
     float closestDistance = FLT_MAX;
     for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
         for (OFArray<GridBox *> *col in row) {
@@ -125,6 +119,80 @@
     }
 
     return closestBox;
+}
+
+- (Player *nillable)checkWin
+{
+    // Check rows
+    for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
+        for (OFArray<GridBox *> *col in row) {
+            auto first = col[0].occupier;
+            if (first == nilptr)
+                continue;
+
+            bool win = true;
+            for (GridBox *box in col) {
+                if (box.occupier != first) {
+                    win = false;
+                    break;
+                }
+            }
+
+            if (win)
+                return first;
+        }
+    }
+
+    // Check columns
+    for (auto x = 0UL; x < _boxes.count; x++) {
+        for (auto z = 0UL; z < _boxes[0][0].count; z++) {
+            auto first = _boxes[x][0][z].occupier;
+            if (first == nilptr)
+                continue;
+
+            bool win = true;
+            for (auto y = 0UL; y < _boxes[0].count; y++) {
+                if (_boxes[x][y][z].occupier != first) {
+                    win = false;
+                    break;
+                }
+            }
+
+            if (win)
+                return first;
+        }
+    }
+
+    // Check diagonals
+    auto first = _boxes[0][0][0].occupier;
+    if (first != nilptr) {
+        bool win = true;
+        for (auto i = 0UL; i < _boxes.count; i++) {
+            if (_boxes[i][i][i].occupier != first) {
+                win = false;
+                break;
+            }
+        }
+
+        if (win)
+            return first;
+    }
+
+    first = _boxes[0][_boxes[0].count - 1][0].occupier;
+    if (first != nilptr) {
+        bool win = true;
+        for (auto i = 0UL; i < _boxes.count; i++) {
+            if (_boxes[i][_boxes[0].count - 1 - i][i].occupier != first) {
+                win = false;
+                break;
+            }
+        }
+
+        if (win)
+            return first;
+    }
+
+    return nilptr;
 }
 
 - (OFString *)description

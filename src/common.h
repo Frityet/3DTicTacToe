@@ -19,6 +19,7 @@
 
 #import <ObjFW/ObjFW.h>
 #include <raylib.h>
+#include <iso646.h>
 
 #define nonnil _Nonnull
 #define nillable _Nullable
