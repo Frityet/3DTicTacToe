@@ -64,6 +64,9 @@ $nonnil_begin
     DrawFPS(10, 30);
     //the current player and their wins
     DrawText(currentPlayer.description.UTF8String, 10, 50, 20, DARKGRAY);
+
+    char tktxt[2] = {currentPlayer.ticker, 0};
+    DrawText(tktxt, GetScreenWidth() - 64, 10, 64, BLACK);
 }
 
 - (void)update
