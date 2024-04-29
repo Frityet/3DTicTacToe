@@ -23,7 +23,7 @@
 @property Vector3 position, size;
 @property(weak, nullable) Player *occupier;
 
-- (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour;
+- (instancetype)initAt: (Vector3)position size: (Vector3)size;
 - (void)drawSelectedOutline;
 
 @end

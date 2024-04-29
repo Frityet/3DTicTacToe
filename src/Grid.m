@@ -22,7 +22,7 @@ $nonnil_begin
 
 @implementation GridBox
 
-- (instancetype)initAt: (Vector3)position size: (Vector3)size colour: (Color)colour
+- (instancetype)initAt: (Vector3)position size: (Vector3)size
 {
     self = [super init];
 
@@ -71,7 +71,7 @@ $nonnil_begin
                     (position.x + x * 2)-1,
                     (position.y + y * 2)-1,
                     (position.z + z * 2)-1
-                } size: (Vector3){1, 1, 1} colour: (Color[]){ RED, BLUE, GREEN, YELLOW, ORANGE, PINK, PURPLE }[(x * 3 + y) % 7]]];
+                } size: (Vector3){1, 1, 1}]];
             }
             [col makeImmutable];
             [row addObject: col];
@@ -168,7 +168,7 @@ $nonnil_begin
     }
 
     // Check diagonals
-    auto first = _boxes[0][0][0].occupier;
+    Player *nillable first = _boxes[0][0][0].occupier;
     if (first != nilptr) {
         auto win = true;
         for (auto i = 0ul; i < _boxes.count; i++) {
