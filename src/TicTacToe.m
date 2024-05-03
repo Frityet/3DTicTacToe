@@ -4,25 +4,28 @@
 
 $nonnil_begin
 
-@implementation Game {
-    Grid *nonnil grid;
+@interface TicTacToe : OFObject<GameDelegate> @end
+
+@implementation TicTacToe {
+    OFINIFile *configFile;
+
+    Grid *grid;
 
     //What the current player (the camera) is hovering  over
     GridBox *nillable hoveringOver;
-    OFMutableArray<Player *> *nonnil players;
-    __weak Player *nonnil currentPlayer;
+    OFMutableArray<Player *> *players;
+    __weak Player *currentPlayer;
 
     //Reference to the currentPlayer's camera if it is a LocalPlayer
-    const Camera3D *nonnil cameraRef;
+    const Camera3D *cameraRef;
 }
+
+- (OFString *)title
+{ return @"3D Tic Tac Toe";  }
 
 - (instancetype)init
 {
     self = [super init];
-
-    self->_title = @"3D Tic Tac Toe";
-    self->_screenSize = (OFPoint) { 1680, 1050 };
-    self->_targetFPS = 60;
 
     grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } size: 4];
 
@@ -36,7 +39,33 @@ $nonnil_begin
     currentPlayer = players[0];
     cameraRef = ((LocalPlayer *)currentPlayer).camera;
 
+    auto path = [OFFileManager.defaultManager.currentDirectoryIRI IRIByAppendingPathComponent: @"3DTicTacToe.Config.ini"];
+    if (not [OFFileManager.defaultManager fileExistsAtIRI: path]) {
+        auto fsrep = path.fileSystemRepresentation;
+        if (fsrep == nilptr) @throw [OFInvalidFormatException exception];
+
+        auto f = [OFFile fileWithPath: (OFString *nonnil)fsrep mode: @"w"];
+        [f writeString: @"[Video Settings]\nWidth=1680\nHeight=1050\nMax FPS=60\n"];
+        [f close];
+    }
+
+    configFile = [OFINIFile fileWithIRI: path];
+
     return self;
+}
+
+- (struct ScreenSize)screenSize
+{
+    OFINICategory *videoSettings = [configFile categoryForName: @"Video Settings"];
+    return (struct ScreenSize) {
+        .width = [videoSettings longLongValueForKey: @"Width" defaultValue: 1680],
+        .height = [videoSettings longLongValueForKey: @"Height" defaultValue: 1050]
+    };
+}
+
+- (size_t)targetFPS
+{
+    return [[configFile categoryForName: @"Video Settings"] longLongValueForKey: @"Max FPS" defaultValue: 60];
 }
 
 //run once just before the `draw` and `update` will start running
@@ -126,5 +155,7 @@ $nonnil_begin
 }
 
 @end
+
+$game(TicTacToe);
 
 $nonnil_end

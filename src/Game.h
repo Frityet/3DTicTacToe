@@ -30,19 +30,50 @@ $nonnil_begin
 @protocol Updatable
 - (void)update;
 @end
+//
+//@interface Game : OFObject<Updatable, Renderable>
+//
+//@property(readonly) OFString *title;
+//@property(readonly) OFPoint screenSize;
+//@property(readonly) int targetFPS;
+//
+//- (void)start;
+//@end
 
-@interface Game : OFObject<Updatable, Renderable>
+struct ScreenSize {
+    size_t width, height;
+};
+
+@protocol GameDelegate<Updatable, Renderable>
+
 @property(readonly) OFString *title;
-@property(readonly) OFPoint screenSize;
-@property(readonly) int targetFPS;
+@property(readonly) struct ScreenSize screenSize;
+@property(readonly) size_t targetFPS;
 
-- (void)start;
 @end
 
 @interface Application : OFObject<OFApplicationDelegate>
-@property(readonly) Game *game;
+@property(readonly) id<GameDelegate> game;
+
+- (instancetype)initWithGame: (id<GameDelegate>)game;
+
 @end
 
+#if defined(OF_WINDOWS)
+#   define $game(T)\
+    int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)\
+    {\
+        extern int __argc;\
+        extern char *nonnil *nonnil __argv;\
+        return OFApplicationMain(&__argc, &__argv, [[Application alloc] initWithGame: [[T alloc] init]]);\
+    }
+#else
+#   define $game(T)\
+    int main(int argc, char *nonnil argv[nonnil static argc])\
+    {\
+        return OFApplicationMain(&argc, &argv, [[Application alloc] initWithGame: [[T alloc] init]]);\
+    }
+#endif
 
 
 $nonnil_end

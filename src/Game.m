@@ -16,25 +16,24 @@
 // along with 3DTicTacToe.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Game.h"
-#include "CArray.h"
 
 $nonnil_begin
 
 @implementation Application
 
-- (instancetype)init
+- (instancetype)initWithGame: (id<GameDelegate>)game
 {
     self = [super init];
 
-    self->_game = [[Game alloc] init];
+    self->_game = game;
 
     return self;
 }
 
 - (void)applicationDidFinishLaunching:_
 {
-    OFLog(@"Starting game %@ (%@)", self.game.title, self.game.className);
-    InitWindow(self.game.screenSize.x, self.game.screenSize.y, self.game.title.UTF8String);
+    OFLog(@"Starting game %@ (%@)", self.game.title, self.game.title);
+    InitWindow(self.game.screenSize.width, self.game.screenSize.height, self.game.title.UTF8String);
     SetTargetFPS(self.game.targetFPS);
 
     [OFTimer scheduledTimerWithTimeInterval: 0 target: self.game selector: @selector(start) repeats: false];
@@ -61,19 +60,5 @@ $nonnil_begin
 }
 
 @end
-
-#if defined(OF_WINDOWS)
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-    extern int __argc;
-    extern char *nonnil *nonnil __argv;
-    return OFApplicationMain(&__argc, &__argv, [[Application alloc] init]);
-}
-#else
-int main(int argc, char *nonnil argv[nonnil static argc])
-{
-    return OFApplicationMain(&argc, &argv, [[Application alloc] init]);
-}
-#endif
 
 $nonnil_end
