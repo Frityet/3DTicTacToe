@@ -33,7 +33,6 @@ $nonnil_begin
 
 - (void)onSwitchIn
 {
-    [OFStdOut writeFormat: @"Switched to player %c\n", _ticker];
     _isTurn = true;
 }
 

@@ -19,7 +19,9 @@
 
 $nonnil_begin
 
-@implementation LocalPlayer
+@implementation LocalPlayer {
+    bool firstSwitch;
+}
 
 - (instancetype)initWithTicker: (char)ticker colour: (Color)colour
 {
@@ -32,12 +34,22 @@ $nonnil_begin
         .projection = CAMERA_PERSPECTIVE
     };
 
+    firstSwitch = true;
+
     return self;
+}
+
+- (void)onSwitchIn
+{
+    [super onSwitchIn];
+    if (firstSwitch)
+        firstSwitch = false;
 }
 
 //internal raylibs function we are just gonna use cause im lazy
 RLAPI void CameraYaw(Camera *camera, float angle, bool rotateAroundTarget);
 RLAPI void CameraPitch(Camera *camera, float angle, bool lockView, bool rotateAroundTarget, bool rotateUp);
+RLAPI void CameraRoll(Camera *camera, float direction);
 
 constexpr auto CAMERA_ROTATION_SPEED = 0.03f;
 
@@ -51,11 +63,23 @@ constexpr auto CAMERA_ROTATION_SPEED = 0.03f;
         CameraYaw(&_camera, CAMERA_ROTATION_SPEED, true);
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         CameraYaw(&_camera, -CAMERA_ROTATION_SPEED, true);
+
+    //zoom in and out with keys Q and E
+    if (IsKeyDown(KEY_Q))
+        CameraRoll(&_camera, CAMERA_ROTATION_SPEED);
+    if (IsKeyDown(KEY_E))
+        CameraRoll(&_camera, -CAMERA_ROTATION_SPEED);
+
     self->_position = _camera.position;
 }
 
 - (const Camera3D *)camera
 { return &_camera; }
+
+- (void)draw {
+    if (not firstSwitch)
+        [super draw];
+}
 
 @end
 
