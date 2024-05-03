@@ -28,7 +28,9 @@ $nonnil_begin
 
     players = [@[
         [[LocalPlayer alloc] initWithTicker: 'X' colour: RED],
-        [[LocalPlayer alloc] initWithTicker: 'O' colour: BLUE]
+        [[LocalPlayer alloc] initWithTicker: 'O' colour: BLUE],
+        [[LocalPlayer alloc] initWithTicker: 'Y' colour: GREEN],
+        [[LocalPlayer alloc] initWithTicker: 'Z' colour: YELLOW]
     ] mutableCopy];
 
     currentPlayer = players[0];
@@ -63,6 +65,12 @@ $nonnil_begin
     //the current player and their wins
     DrawText([OFString stringWithFormat: @"Wins: %u\n", currentPlayer.wins].UTF8String, 10, 50, 32, currentPlayer.colour);
     DrawText((char []){currentPlayer.ticker, 0}, GetScreenWidth() - 128, 10, 128, currentPlayer.colour);
+
+    //Leaderboard
+    DrawRectangle(GetScreenWidth() - 128 - 8, 128 - 8, 96, 48 * players.count, Fade(BLACK, 0.5f));
+    for (Player *player in players) {
+        DrawText([OFString stringWithFormat: @"%c: %u\n", player.ticker, player.wins].UTF8String, GetScreenWidth() - 128, 128 + 50 * [players indexOfObject: player], 32, player.colour);
+    }
 }
 
 - (void)update
