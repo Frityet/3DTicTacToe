@@ -37,3 +37,8 @@ typedef void *nillable nilptr_t;
 
 #define any __kindof
 typedef any OFObject *Any;
+
+//dunno why it cant see the compatability alias in the header but ok
+#if __CLION_IDE__
+@compatibility_alias NSArray OFArray;
+#endif

@@ -18,9 +18,11 @@
 #import "Game.h"
 #import "Player.h"
 
+$nonnil_begin
+
 @interface GridBox : OFObject<Renderable>
 
-@property Vector3 position, size;
+@property(readonly) Vector3 position, size;
 @property(weak, nullable) Player *occupier;
 
 - (instancetype)initAt: (Vector3)position size: (Vector3)size;
@@ -30,11 +32,14 @@
 
 @interface Grid : OFObject<Renderable, Interactable>
 
-@property Vector3 position, size;
-@property OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
+@property(readonly) Vector3 position;
+@property(readonly) size_t size;
+@property(readonly) OFArray<OFArray<OFArray<GridBox *> *> *> *boxes;
 
-- (instancetype)initAt: (Vector3)position width: (unsigned int)width height: (unsigned int)height depth: (unsigned int)depth;
+- (instancetype)initAt: (Vector3)position size: (size_t)size;
 - (Player *nillable)checkWin;
 
 @end
+
+$nonnil_end
 

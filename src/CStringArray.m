@@ -19,7 +19,7 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@implementation $carray_name(CString)
+@implementation $CArray(CString)
 
 //split the `_items` into an array of strings (by splitting on '\0')
 - (CString *)splitIntoArray: (CString *_Nonnull)out [[clang::objc_direct]]
@@ -162,7 +162,7 @@ OF_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation $carray_name(CString)($concat($carray_name(CString), Extensions))
+@implementation $CArray(CString)($concat($CArray(CString), Extensions))
 
 - (CString (*)[])toArray
 {

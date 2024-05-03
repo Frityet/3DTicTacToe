@@ -54,19 +54,19 @@ $nonnil_begin
 
 @implementation Grid
 
-- (instancetype)initAt:(Vector3)position width: (unsigned int)width height: (unsigned int)height depth: (unsigned int)depth
+- (instancetype)initAt:(Vector3)position size: (size_t)size
 {
     self = [super init];
 
     _position = position;
 
-    auto boxes = [OFMutableArray<OFArray<OFArray<GridBox *> *> *> arrayWithCapacity: width];
+    auto boxes = [OFMutableArray<OFArray<OFArray<GridBox *> *> *> arrayWithCapacity: size];
 
-    for (auto x = 0u; x < width; x++) {
-        auto row = [OFMutableArray<OFArray<GridBox *> *> arrayWithCapacity: height];
-        for (auto y = 0u; y < height; y++) {
-            auto col = [OFMutableArray<GridBox *> arrayWithCapacity: depth];
-            for (auto z = 0u; z < depth; z++) {
+    for (auto x = 0u; x < size; x++) {
+        auto row = [OFMutableArray<OFArray<GridBox *> *> arrayWithCapacity: size];
+        for (auto y = 0u; y < size; y++) {
+            auto col = [OFMutableArray<GridBox *> arrayWithCapacity: size];
+            for (auto z = 0u; z < size; z++) {
                 [col addObject: [[GridBox alloc] initAt: (Vector3) {
                     (position.x + x * 2)-1,
                     (position.y + y * 2)-1,
@@ -83,7 +83,7 @@ $nonnil_begin
     [boxes makeImmutable];
     _boxes = boxes;
 
-    _size = (Vector3) {width, height, depth};
+    _size = size;
 
     return self;
 }
@@ -127,73 +127,47 @@ $nonnil_begin
 
 - (Player *nillable)checkWin
 {
-    // Check rows
-    for (OFArray<OFArray<GridBox *> *> *row in _boxes) {
-        for (OFArray<GridBox *> *col in row) {
-            Player *nillable first = col[0].occupier;
-            if (first == nilptr)
-                continue;
+    //for math later on this has to be signed, yes it's a downcast but theres no way your grid will be larger than SSIZE_T_MAX I hope
+    auto n = (ssize_t)_size;
+    static const int DIRECTIONS[][3] = {
+        {1, 0, 0}, {0, 1, 0}, {0, 0, 1},  //x, y, z directions
+        {1, 1, 0}, {1, 0, 1}, {0, 1, 1},  //2D diagonals
+        {1, 1, 1}, {-1, 1, 1},            //3D diagonals
+        {1, 1, -1}, {-1, 1, -1},          // Diagonals on bottom face
+        {1, -1, 1}, {-1, -1, 1}           // Diagonals on top face
+    };
 
-            auto win = true;
-            for (GridBox *box in col) {
-                if (box.occupier != first) {
-                    win = false;
-                    break;
+    for (auto x = 0; x < n; x++) {
+        for (auto y = 0; y < n; y++) {
+            for (auto z = 0; z < n; z++) {
+                auto box = _boxes[x][y][z];
+                if (box.occupier == nilptr) {
+                    continue;
+                }
+
+                for (auto i = 0u; i < sizeof(DIRECTIONS) / sizeof(DIRECTIONS[0]); i++) {
+                    int dx = DIRECTIONS[i][0], dy = DIRECTIONS[i][1], dz = DIRECTIONS[i][2];
+
+                    //`dx` could be negative, so this must be an int so that `dx * count` results in an int
+                    int count = 0;
+                    while (true) {
+                        auto nx = x + dx * count, ny = y + dy * count, nz = z + dz * count;
+                        if (nx < 0  or nx >= n
+                         or ny < 0  or ny >= n
+                         or nz < 0  or nz >= n
+                         or not [_boxes[nx][ny][nz].occupier isEqual: box.occupier]) {
+                            break;
+                        }
+
+                        count++;
+                    }
+
+                    if (count == n) {
+                        return box.occupier;
+                    }
                 }
             }
-
-            if (win)
-                return first;
         }
-    }
-
-    // Check columns
-    for (auto x = 0ul; x < _boxes.count; x++) {
-        for (auto z = 0ul; z < _boxes[0][0].count; z++) {
-            auto first = _boxes[x][0][z].occupier;
-            if (first == nilptr)
-                continue;
-
-            auto win = true;
-            for (auto y = 0ul; y < _boxes[0].count; y++) {
-                if (_boxes[x][y][z].occupier != first) {
-                    win = false;
-                    break;
-                }
-            }
-
-            if (win)
-                return first;
-        }
-    }
-
-    // Check diagonals
-    Player *nillable first = _boxes[0][0][0].occupier;
-    if (first != nilptr) {
-        auto win = true;
-        for (auto i = 0ul; i < _boxes.count; i++) {
-            if (_boxes[i][i][i].occupier != first) {
-                win = false;
-                break;
-            }
-        }
-
-        if (win)
-            return first;
-    }
-
-    first = _boxes[0][_boxes[0].count - 1][0].occupier;
-    if (first != nilptr) {
-        auto win = true;
-        for (auto i = 0ul; i < _boxes.count; i++) {
-            if (_boxes[i][_boxes[0].count - 1 - i][i].occupier != first) {
-                win = false;
-                break;
-            }
-        }
-
-        if (win)
-            return first;
     }
 
     return nilptr;

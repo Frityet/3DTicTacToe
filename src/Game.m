@@ -16,6 +16,7 @@
 // along with 3DTicTacToe.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Game.h"
+#include "CArray.h"
 
 $nonnil_begin
 
@@ -69,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return OFApplicationMain(&__argc, &__argv, [[Application alloc] init]);
 }
 #else
-int main(int argc, char *nonnil argv[nonnil])
+int main(int argc, char *nonnil argv[nonnil static argc])
 {
     return OFApplicationMain(&argc, &argv, [[Application alloc] init]);
 }

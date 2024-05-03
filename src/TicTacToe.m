@@ -1,6 +1,4 @@
 #import "Game.h"
-#include <raylib.h>
-
 #import "Grid.h"
 #import "LocalPlayer.h"
 
@@ -26,7 +24,7 @@ $nonnil_begin
     self->_screenSize = (OFPoint) { 1680, 1050 };
     self->_targetFPS = 60;
 
-    grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } width: 4 height: 4 depth: 4];
+    grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } size: 4];
 
     players = [@[
         [[LocalPlayer alloc] initWithTicker: 'X' colour: RED],
@@ -105,7 +103,7 @@ $nonnil_begin
             }
         }
 
-        grid = [grid initAt: grid.position width: grid.size.x height: grid.size.y depth: grid.size.z];
+        grid = [grid initAt: grid.position size: grid.size];
     }
 }
 

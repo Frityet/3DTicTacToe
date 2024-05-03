@@ -22,12 +22,12 @@ OF_ASSUME_NONNULL_BEGIN
 #define $_concat(a, b) a##b
 #define $concat(...) $_concat(__VA_ARGS__)
 
-#if !defined($carray_name)
-#   define $carray_name(T) $concat(T, Array)
+#if !defined($CArray)
+#   define $CArray(T) $concat(T, Array)
 #endif
 
 #define $declare_carray(T)                                                          \
-@interface $carray_name(T) : OFObject                                               \
+@interface $CArray(T) : OFObject                                               \
 @property(readonly) size_t count;                                                   \
 @property(readonly) size_t capacity;                                                \
 @property(readonly) T *items;                                                       \
@@ -47,7 +47,7 @@ OF_ASSUME_NONNULL_BEGIN
 @end
 
 #define $define_carray(T)                                                           \
-@implementation $carray_name(T)                                                     \
+@implementation $CArray(T)                                                     \
 - (instancetype)init                                                                \
 {                                                                                   \
     self = [super init];                                                            \
@@ -158,7 +158,7 @@ typedef const char *WeakCString;
 typedef char *MutableWeakCString;
 
 //specialisation, the CStringArray will copy and store its memory in one `const char *`
-@interface $carray_name(CString) : OFObject {
+@interface $CArray(CString) : OFObject {
     @private MutableCString _items;
 }
 @property(readonly) size_t count;
@@ -179,7 +179,7 @@ typedef char *MutableWeakCString;
 - (CString)objectAtIndexedSubscript: (size_t)index [[clang::objc_direct]];
 @end
 
-@interface $carray_name(CString)($concat($carray_name(CString), Extensions))
+@interface $CArray(CString)($concat($CArray(CString), Extensions))
 - (CString (*)[])toArray [[clang::objc_direct]];
 - (MutableCString (*)[])copyToArray [[clang::objc_direct]];
 @end
