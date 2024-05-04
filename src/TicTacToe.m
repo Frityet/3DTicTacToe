@@ -39,16 +39,12 @@ $nonnil_begin
     currentPlayer = players[0];
     cameraRef = ((LocalPlayer *)currentPlayer).camera;
 
-    auto path = [OFFileManager.defaultManager.currentDirectoryIRI IRIByAppendingPathComponent: @"3DTicTacToe.Config.ini"];
+    auto path = [OFIRI fileIRIWithPath: @"3DTicTacToe.Config.ini"];
     if (not [OFFileManager.defaultManager fileExistsAtIRI: path]) {
-        auto fsrep = path.fileSystemRepresentation;
-        if (fsrep == nilptr) @throw [OFInvalidFormatException exception];
-
-        auto f = [OFFile fileWithPath: (OFString *nonnil)fsrep mode: @"w"];
+        auto f = [OFIRIHandler openItemAtIRI: path mode: @"w"];
         [f writeString: @"[Video Settings]\nWidth=1680\nHeight=1050\nMax FPS=60\n"];
         [f close];
     }
-
     configFile = [OFINIFile fileWithIRI: path];
 
     return self;
