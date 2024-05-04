@@ -30,25 +30,16 @@ $nonnil_begin
 @protocol Updatable
 - (void)update;
 @end
-//
-//@interface Game : OFObject<Updatable, Renderable>
-//
-//@property(readonly) OFString *title;
-//@property(readonly) OFPoint screenSize;
-//@property(readonly) int targetFPS;
-//
-//- (void)start;
-//@end
 
-struct ScreenSize {
-    size_t width, height;
-};
-
-@protocol GameDelegate<Updatable, Renderable>
+@protocol GameDelegate<OFObject, Updatable, Renderable>
 
 @property(readonly) OFString *title;
-@property(readonly) struct ScreenSize screenSize;
-@property(readonly) size_t targetFPS;
+@property Vector2 screenSize;
+@property size_t targetFPS;
+
+@optional
+
+- (void)finish;
 
 @end
 

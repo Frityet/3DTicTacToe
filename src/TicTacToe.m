@@ -1,13 +1,14 @@
 #import "Game.h"
 #import "Grid.h"
 #import "LocalPlayer.h"
+#import "GameOptions.h"
 
 $nonnil_begin
 
 @interface TicTacToe : OFObject<GameDelegate> @end
 
 @implementation TicTacToe {
-    OFINIFile *configFile;
+    GameOptions *options;
 
     Grid *grid;
 
@@ -29,39 +30,42 @@ $nonnil_begin
 
     grid = [[Grid alloc] initAt: (Vector3) { -1, -1, -1 } size: 4];
 
-    players = [@[
+    players = [OFMutableArray arrayWithArray: @[
         [[LocalPlayer alloc] initWithTicker: 'X' colour: RED],
         [[LocalPlayer alloc] initWithTicker: 'O' colour: BLUE],
         [[LocalPlayer alloc] initWithTicker: 'Y' colour: GREEN],
         [[LocalPlayer alloc] initWithTicker: 'Z' colour: YELLOW]
-    ] mutableCopy];
+    ]];
 
     currentPlayer = players[0];
     cameraRef = ((LocalPlayer *)currentPlayer).camera;
-
-    auto path = [OFIRI fileIRIWithPath: @"3DTicTacToe.Config.ini"];
-    if (not [OFFileManager.defaultManager fileExistsAtIRI: path]) {
-        auto f = [OFIRIHandler openItemAtIRI: path mode: @"w"];
-        [f writeString: @"[Video Settings]\nWidth=1680\nHeight=1050\nMax FPS=60\n"];
-        [f close];
-    }
-    configFile = [OFINIFile fileWithIRI: path];
+    options = [[GameOptions alloc] initWithIRI: [OFIRI fileIRIWithPath: @"3DTicTacToe.Config.ini"]];
 
     return self;
 }
 
-- (struct ScreenSize)screenSize
+- (Vector2)screenSize
 {
-    OFINICategory *videoSettings = [configFile categoryForName: @"Video Settings"];
-    return (struct ScreenSize) {
-        .width = [videoSettings longLongValueForKey: @"Width" defaultValue: 1680],
-        .height = [videoSettings longLongValueForKey: @"Height" defaultValue: 1050]
+    return (Vector2) {
+        .x = options.width,
+        .y = options.height
     };
+}
+
+- (void)setScreenSize: (Vector2)size
+{
+    options.width = size.x;
+    options.height = size.y;
 }
 
 - (size_t)targetFPS
 {
-    return [[configFile categoryForName: @"Video Settings"] longLongValueForKey: @"Max FPS" defaultValue: 60];
+    return options.maxFPS;
+}
+
+- (void)setTargetFPS: (size_t)targetFPS
+{
+    options.maxFPS = targetFPS;
 }
 
 //run once just before the `draw` and `update` will start running
@@ -148,6 +152,11 @@ $nonnil_begin
     if ([currentPlayer isKindOfClass: LocalPlayer.class]) {
         cameraRef = ((LocalPlayer *)currentPlayer).camera;
     }
+}
+
+- (void)finish
+{
+    [options save];
 }
 
 @end

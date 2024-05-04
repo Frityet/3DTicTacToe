@@ -33,7 +33,7 @@ $nonnil_begin
 - (void)applicationDidFinishLaunching:_
 {
     OFLog(@"Starting game %@ (%@)", self.game.title, self.game.title);
-    InitWindow(self.game.screenSize.width, self.game.screenSize.height, self.game.title.UTF8String);
+    InitWindow(self.game.screenSize.x, self.game.screenSize.y, self.game.title.UTF8String);
     SetTargetFPS(self.game.targetFPS);
 
     [OFTimer scheduledTimerWithTimeInterval: 0 target: self.game selector: @selector(start) repeats: false];
@@ -45,12 +45,15 @@ $nonnil_begin
         EndDrawing();
 
         if (WindowShouldClose()) {
+            if ([self.game respondsToSelector: @selector(finish)])
+                [self.game finish];
             CloseWindow();
             [OFApplication terminate];
         }
 
         if (IsKeyPressed(KEY_F12)) {
-            TakeScreenshot("screenshot.png");
+            auto path = [OFIRI fileIRIWithPath: [OFString stringWithFormat: @"screenshot-%@.png", OFDate.date]];
+            TakeScreenshot(path.fileSystemRepresentation.UTF8String);
         }
 
         if (IsKeyPressed(KEY_F11)) {
